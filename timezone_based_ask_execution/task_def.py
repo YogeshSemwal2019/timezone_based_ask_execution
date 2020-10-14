@@ -4,23 +4,11 @@ from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from .config import config
-from .countryinfo import gettimezone
-import pytz 
+from .countryinfo import gettimezone 
 from datetime import datetime
 
 engine = create_engine('sqlite:///' + config.get('database','path'), echo=False)
 Base = declarative_base()
-
-def convert_datetime_timezone(dt, tz1):
-    tz1 = pytz.timezone(tz1)
-    tz2 = pytz.timezone('UTC')
-
-    dt = datetime.strptime(dt,"%H:%M:%S")
-    dt = tz1.localize(dt)
-    dt = dt.astimezone(tz2)
-    dt = dt.strftime("%H:%M:%S")
-
-    return dt
 
 ########################################################################
 class Task(Base):
@@ -43,8 +31,8 @@ class Task(Base):
         self.user = user
         self.timezone = gettimezone(country)        
         self.country = country
-        self.start_time = convert_datetime_timezone(start_time,self.timezone)
-        self.end_time = convert_datetime_timezone(end_time,self.timezone)
+        self.start_time = start_time
+        self.end_time = end_time
         self.weekdays = weekdays
 
     def __eq__(self, other): 
